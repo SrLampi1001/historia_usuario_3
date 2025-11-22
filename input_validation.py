@@ -62,11 +62,31 @@ def validate_csv_path(string):
     #Valida la existencia de la ruta, y donde deja de existir
 def validate_only_path_existence(string):
     """
-    valida si la ruta existe
+    valida si la ruta existe, solo en el nivel de directorios
     retorna True si existe, False de otro modo
     """
     string = os.path.dirname(string) #Extrae la ruta del directorio
     return bool(os.path.exists(string))
 
 def validate_full_path_existence(string):
+    """
+    Valida si toda la ruta existe, no solo los directorios
+    """
     return bool(os.path.exists(string))
+
+def transform_to_float(number):
+    """
+    Transforma a float sin el input del usuario
+    """
+    try:
+        return float(number)
+    except:
+        return float(0)
+def transform_to_int(number):
+    """
+    Transforma a Int sin el input del usuario
+    """
+    try:
+        return int(number)
+    except:
+        return 0

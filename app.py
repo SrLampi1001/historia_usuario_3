@@ -22,6 +22,7 @@ def menu():
     
     Ningún error cierra el programa (captura y mensaje, volver a menú)
     """
+    global inventario #Evitar que se cree una variable local inventario -> opcion 8 la crea y produce error
     print("""
                             MENU 
 Bienvenido!, por favor ingrese una de las siguientes opciones (1-9):
@@ -104,7 +105,35 @@ ________________________________________________________________________________
         if not input_validation.validate_full_path_existence(ruta):
             print("El archivo al que está intentando acceder no existe")
             return menu()
-        archivos.cargar_csv(ruta)
+        nuevo_inventario = archivos.cargar_csv(ruta)
+        if nuevo_inventario == None:
+            print("El inventario no se ha podido cargar o se encuentra vacio")
+            return menu()
+        print("\nDesea sobrescribir el inventario actual? (s/n)\nSi selecciona no, se adicionara el cargado al actual?")
+        sel = input_validation.validate_string(input())
+        while sel != 'n' and sel != 's':
+            print('Por favor ingrese s o n, para si o no respectivamente, cualquier otra entrada no es permitida')
+            sel = input_validation.validate_string(input())
+        if sel == 's':
+            inventario = nuevo_inventario #Evitar que cree una variable local inventario
+            print("El inventario se ha sobrescrito con exito")
+        else:
+            nombre = [] #Lista de nombres en el inventario
+            nombre_nuevo = [] #Lista de nombres en el nuevo inventario
+            for i in range(len(inventario) if len(inventario)>= len(nuevo_inventario) else len(nuevo_inventario)): #Iterar sobre el que tenga mayor cantidad de elementos
+                if i < len(nuevo_inventario):
+                    nombre_nuevo.append(nuevo_inventario[i]["Nombre"].lower().replace(' ', ''))  #Ingresar sin espacios ni mayusculas para comparacion mas acertada
+                if i < len(inventario):
+                    nombre.append(inventario[i]["Nombre"].lower().replace(' ', ''))  #Ingresar sin espacios ni mayusculas para comparacion mas acertada
+            for i in range(len(nombre_nuevo)): #Iterar sobre el que tenga mayor numero de elementos
+                if nombre_nuevo[i] in nombre:
+                    indice_en_inventario = int(nombre.index(nombre_nuevo[i]))
+                    inventario[indice_en_inventario]["Precio"] = nuevo_inventario[i]["Precio"]
+                    inventario[indice_en_inventario]["Cantidad"] += nuevo_inventario[i]["Cantidad"]
+                else:
+                    inventario.append(nuevo_inventario[i])
+            print("El inventario cargado ha sido fusionado con el actual con exito")
+
     elif seleccion=="9" or seleccion=="Salir":
         print("Gracias por usar el programa")
         return
